@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74a1cf553eca53a449ef3c97024b7fda, type: 3}
+  m_Name: Mizrak
+  m_EditorClassIdentifier: 
+  itemSprite: {fileID: 21300000, guid: 71924f49de68a1041bc6403cb2a37863, type: 3}
+  itemName: "M\u0131zrak"
+  itemCraftDescr: " 1 B\u0131\xE7ak d\xFCs 1 Sopa d\xFCs 1 Bant"
+  myItemList:
+  - Bicak,1
+  - Sopa,1
+  - Bant,1
+  myItemCountList: 010000000100000001000000
+  prefabPanelName: Mizrak
+  imagePanelName: Image
+  titlePanelName: CraftTitle
+  descrPanelName: CraftDescription
+  buttonPanelName: CraftButton
