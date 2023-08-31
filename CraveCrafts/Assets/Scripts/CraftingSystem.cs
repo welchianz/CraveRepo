@@ -9,37 +9,23 @@ using System.Linq;
 
 public class CraftingSystem : MonoBehaviour
 {
-    //public ControllerSO refreshConSO2;
+
 
     
     public GameObject craftingScreenUI;
     public GameObject toolsScreenUI;
 
-    //ControllerSO sýnýfýndan myItemList listesini almak için
-    //public ControllerSO myItemList1;
 
     // Craft yapabileceðimiz itemlerý saymak için
     public List<int> necessaryItemList1;
 
-    // envanterdeki craft eþyasý sayýsý ile olmasý gereken sayýyý karþýlaþtýrmak içim
-    //public Blueprints myItemCountList1;
 
-    public List<string> inventoryItemList1 = new List<string>();
-    public List<int> ItemListDiffer = new List<int>();
     //Category Buttons
     Button toolsBTN;
 
-    //Craft Buttons
-    Button craftAxeBTN;
-
-    //Requirement Text
-    Text AxeReq1, AxeReq2;
 
     public bool isOpen;
-
-    //All Blueprint
-    //public Blueprint AxeBLP = new Blueprint("Axe", 2, "Stone", 3, "Stick", 3);
-    
+ 
     public static CraftingSystem Instance { get; set; }
     
     //public Blueprints myItemLists;
@@ -48,7 +34,11 @@ public class CraftingSystem : MonoBehaviour
     public Button crfButtonde;
     public GameObject panelMizrak11;
     public GameObject panelMizrak22;
-    //public Blueprint AxeBLPD = new Blueprint("Axe", 2, "Stone", 3, "Stick", 3);
+
+    public GameObject gameParent;
+    public List<GameObject> gameChildList = new List<GameObject>();
+
+    public Dictionary<string, int> sozluks;
 
     private void Awake()
     {
@@ -79,13 +69,39 @@ public class CraftingSystem : MonoBehaviour
         //craftAxeBTN.onClick.AddListener(delegate { CraftAnyItem(); });
         */
 
-        crfButtond = panelMizrak11.transform.Find("CraftButton").GetComponent<Button>();
-        crfButtond.onClick.AddListener(delegate { CraftAnyItem("Mizrak"); });
 
 
 
-        crfButtonde = panelMizrak22.transform.Find("CraftButton").GetComponent<Button>();
-        crfButtonde.onClick.AddListener(delegate { CraftAnyItem("TasMizrak"); });
+        // þimdi
+        //crfButtond = panelMizrak11.transform.Find("CraftButton").GetComponent<Button>();
+        //crfButtond.onClick.AddListener(delegate { CraftAnyItem(panelMizrak11); });
+
+
+
+        //crfButtonde = panelMizrak22.transform.Find("CraftButton").GetComponent<Button>();
+        //crfButtonde.onClick.AddListener(delegate { CraftAnyItem(panelMizrak22); });
+        GetChildList();
+    }
+
+    public void GetChildList()
+    {
+        // Sahnedeki "Parent" adlý objeyi bulun
+
+        for (int i = 0; i < gameParent.transform.childCount; i++) // Parent'ýn altýndaki tüm child'larý döngü ile gezin
+        {
+            GameObject childs = gameParent.transform.GetChild(i).gameObject; // i. indeksteki child'ý alýn
+            gameChildList.Add(childs); // Child'ý listeye ekleyin
+
+            Debug.Log("GetChildList:  " + gameChildList[i].ToString());
+            Debug.Log("GetChildListCount:  " + gameChildList.Count);
+            Button crftsButtons = gameChildList[i].transform.Find("CraftButton").GetComponent<Button>();
+            crftsButtons.onClick.AddListener(delegate {
+            for (int a = 0; a < gameParent.transform.childCount; a++) // Parent'ýn altýndaki tüm child'larý döngü ile gezin
+            { CraftAnyItem(gameChildList[a]); Debug.Log(gameChildList[a].ToString() + "GETchildin"); }
+            });
+            
+        }
+
     }
 
     void OpenToolsCategory()
@@ -95,8 +111,38 @@ public class CraftingSystem : MonoBehaviour
         toolsScreenUI.SetActive(true);
     }
 
-    public void CraftAnyItem(string ada)
-    {   if(ada == "Mizrak")
+    public Dictionary<string, int> TranslatesToDictionary(List<string> firstList)
+    {
+        Dictionary<string, int> dictio = new Dictionary<string, int>();
+        foreach (var item in firstList)
+        {
+            string[] splitValues = item.Split(',');
+            dictio.Add(splitValues[0], Convert.ToInt32(splitValues[1]));
+        }
+
+        return dictio;
+    }
+
+    public void CraftAnyItem(GameObject ada)
+
+    {
+        
+        sozluks = TranslatesToDictionary(ada.GetComponent<ControllerSO>().blueprints.myItemList);
+
+        
+        InventorySystem.Instance.AddToInventory(ada.GetComponent<ControllerSO>().blueprints.prefabPanelName);
+                
+        foreach (var item in sozluks)
+        {
+            InventorySystem.Instance.RemoveItem(item.Key, item.Value);
+        }
+                
+                
+            
+      
+
+        /*
+        if (ada == "Mizrak")
         {
             InventorySystem.Instance.AddToInventory("Mizrak");
             InventorySystem.Instance.RemoveItem("Bant", 1);
@@ -104,7 +150,7 @@ public class CraftingSystem : MonoBehaviour
             InventorySystem.Instance.RemoveItem("Bicak", 1);
         }
         Debug.Log("CraftAnyItem");
-        //InventorySystem.Instance.AddToInventory(blueprintToCraft.itemName);
+
         if (ada == "TasMizrak")
         {
             InventorySystem.Instance.AddToInventory("TasMizrak");
@@ -113,7 +159,7 @@ public class CraftingSystem : MonoBehaviour
             InventorySystem.Instance.RemoveItem("Ip", 1);
             
         }
-        
+        */
 
         StartCoroutine(calculate());
         //StartCoroutine(CraftPanelSystem.InstanceD.RefreshNeededItemsede());
@@ -154,62 +200,6 @@ public class CraftingSystem : MonoBehaviour
         }
     }
 
-    /*public void RefreshNeededItems()
-    {
-        //necessaryItemList1.Clear();
-        int stone_count = 0;
-        int stick_count = 0;
-        //int repItemCount = 0; // tekrar eden item sayýyý sýfýrlanýr
-        inventoryItemList1 = InventorySystem.Instance.itemList;
-        //Debug.Log(inventoryItemList.Count);
-       // foreach (string item in myItemList1.myItemLists)
-        {   foreach (string itemName in inventoryItemList1) 
-            {
- //               if (item == itemName) 
-   //             {    
-     //               repItemCount +=1;
-       //         }
-               
-                switch (itemName)
-                {
-                    case "Stone":
-                        Debug.Log("Stone listede");
-                        stone_count += 1;
-                        break;
-                    case "Stick":
-                        stick_count += 1;
-                        Debug.Log("Stick listede");
-                        break;
-
-                }
-               
-            }
-            //necessaryItemList1.Add(repItemCount);
-            //Debug.Log(item + ":" + Convert.ToString(repItemCount));
-        }
-        
-        //--AXE--//
-        //AxeReq1.text = "3 Stone[" + stone_count + "]";
-        AxeReq2.text = "3 Stick[" + stick_count + "]";
-        
-        if (myItemCountList1.myItemCountList == necessaryItemList1)
-        {
-            craftAxeBTN.gameObject.SetActive(true);
-        }
-        else
-        {
-            craftAxeBTN.gameObject.SetActive(false);
-        }
-        
-        if (stone_count >= 3 && stone_count >= 3)
-        {
-            craftAxeBTN.gameObject.SetActive(true);
-        }
-        else
-        {
-           craftAxeBTN.gameObject.SetActive(false);
-        }
-    
-    }*/
+   
 
 }

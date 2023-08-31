@@ -14,21 +14,16 @@ public class CraftPanelSystem : MonoBehaviour
 {
     public static CraftPanelSystem InstanceD { get; set; }
     public GameObject panelMizrak;
-    //public GameObject panelTasMizrak;
-    //public ScriptableObject myMizrakBlue;
+
     public string myMizrakItemName;
     public List<string> myMizrakNeededList;
-    //public List<string> necessaryItemList;
+
     public List<string> inventoryItemList = new List<string>();
-    //public ControllerSO crDictionaryList;
-    //private bool isActiveBut = false;
+
     public Dictionary<string, int> sozluk;
     public Dictionary<string, int> sozluk2;
-    //public ControllerSO script;
+
     public Button crfButton;
-    //public CraftingSystem crfSystem ;
-    //public Blueprint AxeBLPD = new Blueprint("Axe", 2, "Stone", 3, "Stick", 3);
-    // Start is called before the first frame update
 
     
     public List<GameObject> childList = new List<GameObject>();
@@ -42,23 +37,12 @@ public class CraftPanelSystem : MonoBehaviour
 
         inventoryItemList = InventorySystem.Instance.itemList;
         myMizrakItemName = panelMizrak.GetComponent<ControllerSO>().blueprints.itemName;
-        //Debug.Log(myMizrakItemName+" name");
+        
         myMizrakNeededList = panelMizrak.GetComponent<ControllerSO>().blueprints.myItemList;
-        /* foreach(var item  in myMizrakNeededList)
-         {
-             Debug.Log(item + " Mýzraklist");
-
-         }
-         Debug.Log(" Mýzraklist calisti");*/
-
-        //sozluk = panelMizrak.GetComponent<ControllerSO>().craftItemDic;
+       
         ObjectList();
 
-        //panelMizrak.GetComponent<ControllerSO>().blueprints.
-        //foreach (KeyValuePair<string, int> kvp in sozluk)
-        
-        //StartCoroutine(RefreshNeededItemsed(childList[0]));
-        
+     
         
 
     }
@@ -71,7 +55,7 @@ public class CraftPanelSystem : MonoBehaviour
         {
             GameObject child = parent.transform.GetChild(i).gameObject; // i. indeksteki child'ý alýn
             childList.Add(child); // Child'ý listeye ekleyin
-                                  //Debug.Log(childList[i] + " namee");
+                                  
             StartCoroutine(RefreshNeededItemsed(childList[i]));
             Button crftButtons = childList[i].transform.Find("CraftButton").GetComponent<Button>();
         }
@@ -79,7 +63,7 @@ public class CraftPanelSystem : MonoBehaviour
     }
     public IEnumerator RefreshNeededItemsed(GameObject object1)
     { 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.2f);
         List<string> iteList = object1.GetComponent<ControllerSO>().blueprints.myItemList;
         Button crfButtons = object1.transform.Find("CraftButton").GetComponent<Button>();
 
@@ -144,25 +128,7 @@ public class CraftPanelSystem : MonoBehaviour
         return dicti;
     }
 
-    // Eþyanýn craftlanabilmesi için gerekli itemler varsa butonu aktifleþtirir
-    private void ActiveButton(GameObject button1)
-    {
-
-    }
-
-    // Eþyanýn craftlanabilmesi için gerekli itemler var mý kontrol eder
-    public bool IsActiveButton()
-    {
-        
-
-        return false;
-    }
 
 
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
