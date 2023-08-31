@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using Unity.VisualScripting;
 
 
 public class CraftingSystem : MonoBehaviour
@@ -37,8 +38,11 @@ public class CraftingSystem : MonoBehaviour
 
     public GameObject gameParent;
     public List<GameObject> gameChildList = new List<GameObject>();
+    public List<GameObject> gameChildList2 = new List<GameObject>();
 
     public Dictionary<string, int> sozluks;
+    public Dictionary<string, int> sozluks2;
+    public Dictionary<string, int> sozluks3;
 
     private void Awake()
     {
@@ -54,7 +58,6 @@ public class CraftingSystem : MonoBehaviour
 
     void Start()
     {
-        //Debug.Log("AxeBLP: "+AxeBLP);
         isOpen = false;
 
         toolsBTN = craftingScreenUI.transform.Find("ToolsButton").GetComponent<Button>();
@@ -63,14 +66,10 @@ public class CraftingSystem : MonoBehaviour
         //AXE
         AxeReq1 = toolsScreenUI.transform.Find("Axe").transform.Find("req1").GetComponent<Text>();
         AxeReq2 = toolsScreenUI.transform.Find("Axe").transform.Find("req2").GetComponent<Text>();
-        Debug.Log(AxeReq1);
-        Debug.Log(AxeReq2);
+
         craftAxeBTN = toolsScreenUI.transform.Find("Axe").transform.Find("Button").GetComponent<Button>();
         //craftAxeBTN.onClick.AddListener(delegate { CraftAnyItem(); });
         */
-
-
-
 
         // þimdi
         //crfButtond = panelMizrak11.transform.Find("CraftButton").GetComponent<Button>();
@@ -80,11 +79,12 @@ public class CraftingSystem : MonoBehaviour
 
         //crfButtonde = panelMizrak22.transform.Find("CraftButton").GetComponent<Button>();
         //crfButtonde.onClick.AddListener(delegate { CraftAnyItem(panelMizrak22); });
-        GetChildList();
+       StartCoroutine( GetChildList());
     }
 
-    public void GetChildList()
+    public IEnumerator GetChildList()
     {
+        yield return new WaitForSeconds(0.1f);
         // Sahnedeki "Parent" adlý objeyi bulun
 
         for (int i = 0; i < gameParent.transform.childCount; i++) // Parent'ýn altýndaki tüm child'larý döngü ile gezin
@@ -92,14 +92,28 @@ public class CraftingSystem : MonoBehaviour
             GameObject childs = gameParent.transform.GetChild(i).gameObject; // i. indeksteki child'ý alýn
             gameChildList.Add(childs); // Child'ý listeye ekleyin
 
-            Debug.Log("GetChildList:  " + gameChildList[i].ToString());
-            Debug.Log("GetChildListCount:  " + gameChildList.Count);
+           // Debug.Log("GetChildList:  " + gameChildList[i].ToString());
+           // Debug.Log("GetChildListCount:  " + gameChildList.Count);
             Button crftsButtons = gameChildList[i].transform.Find("CraftButton").GetComponent<Button>();
-            crftsButtons.onClick.AddListener(delegate {
-            for (int a = 0; a < gameParent.transform.childCount; a++) // Parent'ýn altýndaki tüm child'larý döngü ile gezin
-            { CraftAnyItem(gameChildList[a]); Debug.Log(gameChildList[a].ToString() + "GETchildin"); }
-            });
+            int index = i;
             
+            crftsButtons.onClick.AddListener(delegate {
+                
+                CraftAnyItem(gameChildList[index]); Debug.Log(gameChildList[index].ToString() + "GETchildin");
+                
+            });
+            crftsButtons.interactable = CheckIfCraftable(childs);
+        }
+    }
+    public IEnumerator InteractButton()
+    {
+        yield return new WaitForSeconds(0.1f);
+        for (int i = 0; i < gameParent.transform.childCount; i++)
+        {
+            GameObject childs = gameParent.transform.GetChild(i).gameObject; // i. indeksteki child'ý alýn
+            gameChildList2.Add(childs);
+            Button crftsButtons = gameChildList2[i].transform.Find("CraftButton").GetComponent<Button>();
+            crftsButtons.interactable = CheckIfCraftable(gameChildList2[i]);
         }
 
     }
@@ -127,6 +141,7 @@ public class CraftingSystem : MonoBehaviour
 
     {
         
+        
         sozluks = TranslatesToDictionary(ada.GetComponent<ControllerSO>().blueprints.myItemList);
 
         
@@ -136,36 +151,31 @@ public class CraftingSystem : MonoBehaviour
         {
             InventorySystem.Instance.RemoveItem(item.Key, item.Value);
         }
-                
-                
-            
-      
-
-        /*
-        if (ada == "Mizrak")
-        {
-            InventorySystem.Instance.AddToInventory("Mizrak");
-            InventorySystem.Instance.RemoveItem("Bant", 1);
-            InventorySystem.Instance.RemoveItem("Sopa", 1);
-            InventorySystem.Instance.RemoveItem("Bicak", 1);
-        }
-        Debug.Log("CraftAnyItem");
-
-        if (ada == "TasMizrak")
-        {
-            InventorySystem.Instance.AddToInventory("TasMizrak");
-            InventorySystem.Instance.RemoveItem("Tas", 1);
-            InventorySystem.Instance.RemoveItem("Sopa", 1);
-            InventorySystem.Instance.RemoveItem("Ip", 1);
-            
-        }
-        */
 
         StartCoroutine(calculate());
-        //StartCoroutine(CraftPanelSystem.InstanceD.RefreshNeededItemsede());
+       
     }
 
-    public IEnumerator calculate()
+    public bool CheckIfCraftable(GameObject gameObj)
+    {
+        
+        List<string> itemList = gameObj.GetComponent<ControllerSO>().blueprints.myItemList;
+        
+        foreach (var item in itemList)
+        {
+            string[] splitValues = item.Split(',');
+            string itemName = splitValues[0];
+            int itemCount = Convert.ToInt32(splitValues[1]);
+        
+            if (!InventorySystem.Instance.HasEnoughItems(itemName, itemCount))
+            {   Debug.Log(InventorySystem.Instance.HasEnoughItems(itemName, itemCount));
+                return false;
+            }
+        }
+        return true;
+    }
+
+public IEnumerator calculate()
     {
         yield return 0;
         InventorySystem.Instance.ReCalculateList();
@@ -174,7 +184,7 @@ public class CraftingSystem : MonoBehaviour
         
     }
 
-    // Update is called once per frame
+  
     void Update()
     {
         

@@ -19,11 +19,11 @@ public class InteractableObject : MonoBehaviour
       
        
         
-        StartCoroutine( ForItems());
+        ForItems();
     }
-    public IEnumerator ForItems()
+    public void ForItems()
     {
-        yield return new WaitForSeconds(0.1f);
+        
         for (int i = 0; i < 4; i++)
         {
             foreach (var item in addList)

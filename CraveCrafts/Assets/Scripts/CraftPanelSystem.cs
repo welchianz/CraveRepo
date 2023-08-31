@@ -94,7 +94,7 @@ public class CraftPanelSystem : MonoBehaviour
             }
             else
             {
-                crfButtons.gameObject.SetActive(false);
+                //crfButtons.gameObject.SetActive(false);
             }
         }
 

@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.UI;
+using System.Linq;
 
 public class InventorySystem : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class InventorySystem : MonoBehaviour
     //public bool isFull;
 
     //Pickup Popup
-
+    public Dictionary<string,int> inventDictionarys = new Dictionary<string,int>();
 
 
     private void Awake()
@@ -44,6 +45,8 @@ public class InventorySystem : MonoBehaviour
     }
     private void Start()
     {
+        StartCoroutine(Dictio());
+        
         
 
         isOpen = false;
@@ -69,7 +72,7 @@ public class InventorySystem : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.I) && !isOpen)
         {
-            Debug.Log("i is pressed");
+            //Debug.Log("i is pressed");
             inventoryScreenUI.SetActive(true);
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             isOpen = true;
@@ -95,7 +98,7 @@ public class InventorySystem : MonoBehaviour
 
 
 
-        Debug.Log(itemName +" addto");
+        //Debug.Log(itemName +" addto");
         Debug.Log("AddToInventory");
         whatSlotToEquip = FindNextEmptySlot();
 
@@ -103,8 +106,8 @@ public class InventorySystem : MonoBehaviour
         itemToAdd.transform.SetParent(whatSlotToEquip.transform);
             
         itemList.Add(itemName);
-        Debug.Log(itemList);
-        Debug.Log(itemList[0]);
+        //Debug.Log(itemList);
+        //Debug.Log(itemList[0]);
         
 
 
@@ -184,7 +187,7 @@ public class InventorySystem : MonoBehaviour
     {
         Debug.Log("ReCalculateList");
         itemList.Clear();
-
+        
         foreach (GameObject slot in slotList)
         {
             if(slot.transform.childCount > 0)
@@ -195,8 +198,47 @@ public class InventorySystem : MonoBehaviour
 
                 itemList.Add(result);
             }
+            
         }
-
+        StartCoroutine(Dictio());
+        StartCoroutine(CraftingSystem.Instance.InteractButton());
 
     }
+
+
+    public IEnumerator Dictio()
+    {   
+        
+        yield return new  WaitForSeconds(0.05f);
+        Debug.Log("list " + itemList.Count);
+        inventDictionarys = TransInvenToDicti(itemList);
+        Debug.Log(" dict" + inventDictionarys.Count);
+
+    }
+    public Dictionary<string, int> TransInvenToDicti(List<string> firstList)
+    {
+        
+        Dictionary<string, int> dicti = new Dictionary<string, int>();
+        var groupDic = firstList.GroupBy(first => first);
+        foreach (var dic in groupDic)
+        {
+            dicti.Add(dic.Key, dic.Count());
+           
+        }
+        return dicti;
+    }
+    
+    public bool HasEnoughItems(string itemName, int requiredCount)
+    {
+        Debug.Log("itemName: " + itemName + " " + " requ:  " + Convert.ToString(requiredCount));
+        //Debug.Log("itemName: " + inventDictionary.ContainsKey(itemName) + " bu hasEno : " + Convert.ToString(inventDictionary[itemName]) + " requ:  " + Convert.ToString(requiredCount));
+        if (inventDictionarys.ContainsKey(itemName) && inventDictionarys[itemName] >= requiredCount)
+        {
+            
+            return true;
+        }
+        return false;
+    }
+
+
 }
