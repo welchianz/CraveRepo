@@ -1,48 +1,24 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
-using Unity.VisualScripting;
 
 
 public class CraftingSystem : MonoBehaviour
 {
 
-
-    
-    public GameObject craftingScreenUI;
     public GameObject toolsScreenUI;
-
-
-    // Craft yapabileceðimiz itemlerý saymak için
-    public List<int> necessaryItemList1;
-
-
-    //Category Buttons
-    Button toolsBTN;
-
 
     public bool isOpen;
  
     public static CraftingSystem Instance { get; set; }
     
-    //public Blueprints myItemLists;
-
-    public Button crfButtond;
-    public Button crfButtonde;
-    public GameObject panelMizrak11;
-    public GameObject panelMizrak22;
-
     public GameObject gameParent;
     public List<GameObject> gameChildList = new List<GameObject>();
     public List<GameObject> gameChildList2 = new List<GameObject>();
 
     public Dictionary<string, int> sozluks;
-    public Dictionary<string, int> sozluks2;
-    public Dictionary<string, int> sozluks3;
 
     private void Awake()
     {
@@ -60,25 +36,7 @@ public class CraftingSystem : MonoBehaviour
     {
         isOpen = false;
 
-        toolsBTN = craftingScreenUI.transform.Find("ToolsButton").GetComponent<Button>();
-        toolsBTN.onClick.AddListener(delegate { OpenToolsCategory(); });
-        /*
-        //AXE
-        AxeReq1 = toolsScreenUI.transform.Find("Axe").transform.Find("req1").GetComponent<Text>();
-        AxeReq2 = toolsScreenUI.transform.Find("Axe").transform.Find("req2").GetComponent<Text>();
-
-        craftAxeBTN = toolsScreenUI.transform.Find("Axe").transform.Find("Button").GetComponent<Button>();
-        //craftAxeBTN.onClick.AddListener(delegate { CraftAnyItem(); });
-        */
-
-        // þimdi
-        //crfButtond = panelMizrak11.transform.Find("CraftButton").GetComponent<Button>();
-        //crfButtond.onClick.AddListener(delegate { CraftAnyItem(panelMizrak11); });
-
-
-
-        //crfButtonde = panelMizrak22.transform.Find("CraftButton").GetComponent<Button>();
-        //crfButtonde.onClick.AddListener(delegate { CraftAnyItem(panelMizrak22); });
+        
        StartCoroutine( GetChildList());
     }
 
@@ -92,8 +50,6 @@ public class CraftingSystem : MonoBehaviour
             GameObject childs = gameParent.transform.GetChild(i).gameObject; // i. indeksteki child'ý alýn
             gameChildList.Add(childs); // Child'ý listeye ekleyin
 
-           // Debug.Log("GetChildList:  " + gameChildList[i].ToString());
-           // Debug.Log("GetChildListCount:  " + gameChildList.Count);
             Button crftsButtons = gameChildList[i].transform.Find("CraftButton").GetComponent<Button>();
             int index = i;
             
@@ -118,12 +74,7 @@ public class CraftingSystem : MonoBehaviour
 
     }
 
-    void OpenToolsCategory()
-    {
-        Debug.Log("OpenToolsCategory");
-        craftingScreenUI.SetActive(false);
-        toolsScreenUI.SetActive(true);
-    }
+
 
     public Dictionary<string, int> TranslatesToDictionary(List<string> firstList)
     {
@@ -144,16 +95,23 @@ public class CraftingSystem : MonoBehaviour
         
         sozluks = TranslatesToDictionary(ada.GetComponent<ControllerSO>().blueprints.myItemList);
 
-        
-        InventorySystem.Instance.AddToInventory(ada.GetComponent<ControllerSO>().blueprints.prefabPanelName);
-                
+
+        StartCoroutine(AddTimer(ada));
+
+
         foreach (var item in sozluks)
         {
             InventorySystem.Instance.RemoveItem(item.Key, item.Value);
         }
 
-        StartCoroutine(calculate());
+        calculate();
        
+    }
+
+    public IEnumerator AddTimer(GameObject ada)
+    {
+        yield return new WaitForSeconds(0.1f);
+        InventorySystem.Instance.AddToInventory(ada.GetComponent<ControllerSO>().blueprints.prefabPanelName);
     }
 
     public bool CheckIfCraftable(GameObject gameObj)
@@ -175,14 +133,12 @@ public class CraftingSystem : MonoBehaviour
         return true;
     }
 
-public IEnumerator calculate()
-    {
-        yield return 0;
-        InventorySystem.Instance.ReCalculateList();
-       // RefreshNeededItems();
+    public void calculate()
+        {
         
-        
-    }
+            InventorySystem.Instance.ReCalculateList();
+     
+        }
 
   
     void Update()
@@ -191,14 +147,14 @@ public IEnumerator calculate()
 
         if (Input.GetKeyDown(KeyCode.C) && !isOpen)
         {
-            
-            craftingScreenUI.SetActive(true);
+
+            toolsScreenUI.SetActive(true);
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             isOpen = true;
         }
         else if (Input.GetKeyDown(KeyCode.C) && isOpen)
         {
-            craftingScreenUI.SetActive(false);
+            
             toolsScreenUI.SetActive(false);
 
             if (!InventorySystem.Instance.isOpen)

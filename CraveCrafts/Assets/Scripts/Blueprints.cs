@@ -13,16 +13,9 @@ public class Blueprints : ScriptableObject
     //craft açýklamasý
     public string itemCraftDescr;
 
-    // craftlamak için gereken itemlerin isimleri
+    // craftlamak için gereken itemlerin isimleri ve sayýlarý
     public List<string> myItemList;
-    
-        
-    // craftlamak için gereken itemlerin sayýsý
-    public List<int> myItemCountList;
-
-
-
-    
+  
     //Paneldeki image ve textleri getcomponent ile bulmak için(ControllerSO)
     public string prefabPanelName;
     public string imagePanelName;

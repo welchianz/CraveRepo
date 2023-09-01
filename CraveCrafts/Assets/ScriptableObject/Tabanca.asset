@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74a1cf553eca53a449ef3c97024b7fda, type: 3}
   m_Name: Tabanca
   m_EditorClassIdentifier: 
-  itemName: Tabanca
   itemSprite: {fileID: 0}
+  itemName: Tabanca
+  itemCraftDescr: 
   myItemList: []
-  myItemCountList: 
+  prefabPanelName: 
+  imagePanelName: 
+  titlePanelName: 
+  descrPanelName: 
+  buttonPanelName: 

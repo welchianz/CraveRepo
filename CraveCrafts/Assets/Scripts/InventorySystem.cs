@@ -1,16 +1,11 @@
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.UI;
 using System.Linq;
 
 public class InventorySystem : MonoBehaviour
 {
-    public ControllerSO refreshConSO;
-    public GameObject ItemInfoUI;
 
     public static InventorySystem Instance { get; set; }
 
@@ -26,9 +21,6 @@ public class InventorySystem : MonoBehaviour
     
     public bool isOpen;
 
-    //public bool isFull;
-
-    //Pickup Popup
     public Dictionary<string,int> inventDictionarys = new Dictionary<string,int>();
 
 
@@ -94,11 +86,7 @@ public class InventorySystem : MonoBehaviour
 
     public void AddToInventory(string itemName)
     {
-
-
-
-
-        //Debug.Log(itemName +" addto");
+       
         Debug.Log("AddToInventory");
         whatSlotToEquip = FindNextEmptySlot();
 
@@ -106,17 +94,8 @@ public class InventorySystem : MonoBehaviour
         itemToAdd.transform.SetParent(whatSlotToEquip.transform);
             
         itemList.Add(itemName);
-        //Debug.Log(itemList);
-        //Debug.Log(itemList[0]);
-        
-
-
-
-
+       
         ReCalculateList();
-        //refreshConSO.RefreshNeededItemsed();
-        //CraftingSystem.Instance.RefreshNeededItems();
-
 
     }
 
@@ -177,12 +156,11 @@ public class InventorySystem : MonoBehaviour
 
         }
         ReCalculateList();
-       // refreshConSO.RefreshNeededItemsed();
-        //CraftingSystem.Instance.RefreshNeededItems();
+
 
     }
     
-
+    // Envanter listesini sýfýrlar ve tekrardan envanter slotlarýnda bulunan itemleri listeye ekler
     public void ReCalculateList()
     {
         Debug.Log("ReCalculateList");
@@ -205,18 +183,17 @@ public class InventorySystem : MonoBehaviour
 
     }
 
-
+    //Envanter listesini sözlüðe dönüþtürür
     public IEnumerator Dictio()
-    {   
+    {     
         
         yield return new  WaitForSeconds(0.05f);
-        Debug.Log("list " + itemList.Count);
         inventDictionarys = TransInvenToDicti(itemList);
-        Debug.Log(" dict" + inventDictionarys.Count);
-
     }
+
+    //Listedeki elemanlarý gruplandýrýr ve sözlüðe çevirir. Envanter listesini sözlüðe çevirmek için kullanýldý
     public Dictionary<string, int> TransInvenToDicti(List<string> firstList)
-    {
+    {   
         
         Dictionary<string, int> dicti = new Dictionary<string, int>();
         var groupDic = firstList.GroupBy(first => first);
@@ -228,10 +205,10 @@ public class InventorySystem : MonoBehaviour
         return dicti;
     }
     
+    //Craftlamasý yapýlmak istenen eþya için gerekli itemler envanterde var mý diye bakar
     public bool HasEnoughItems(string itemName, int requiredCount)
     {
-        Debug.Log("itemName: " + itemName + " " + " requ:  " + Convert.ToString(requiredCount));
-        //Debug.Log("itemName: " + inventDictionary.ContainsKey(itemName) + " bu hasEno : " + Convert.ToString(inventDictionary[itemName]) + " requ:  " + Convert.ToString(requiredCount));
+        
         if (inventDictionarys.ContainsKey(itemName) && inventDictionarys[itemName] >= requiredCount)
         {
             
